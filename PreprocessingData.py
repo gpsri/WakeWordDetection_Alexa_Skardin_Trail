@@ -11,7 +11,7 @@ import pandas as pd
 
 
 #### LOADING THE VOICE DATA FOR VISUALIZATION ###
-walley_sample = "audio_data/10_59_121.wav"
+walley_sample = "audio_data/10_59_1215.wav"
 data, sample_rate = librosa.load(walley_sample)
 
 ##### VISUALIZING WAVE FORM ##
@@ -23,7 +23,7 @@ plt.show()
 print(sample_rate)
 
 ##### VISUALIZING MFCC #######
-mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=80)
+mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=40)
 print("Shape of mfcc:", mfccs.shape)
 
 plt.title("MFCC")
@@ -36,7 +36,8 @@ all_data = []
 
 data_path_dict = {
     0: ["background_sound/" + file_path for file_path in os.listdir("background_sound/")],
-    1: ["audio_data/" + file_path for file_path in os.listdir("audio_data/")]
+    1: ["audio_data/" + file_path for file_path in os.listdir("audio_data/")],
+    2: ["error_data/" + file_path for file_path in os.listdir("error_data/")]
 }
 
 # the background_sound/ directory has all sounds which DOES NOT CONTAIN wake word
@@ -45,7 +46,7 @@ data_path_dict = {
 for class_label, list_of_files in data_path_dict.items():
     for single_file in list_of_files:
         audio, sample_rate = librosa.load(single_file) ## Loading file
-        mfcc = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=80) ## Apllying mfcc
+        mfcc = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40) ## Apllying mfcc
         mfcc_processed = np.mean(mfcc.T, axis=0) ## some pre-processing
         type(mfcc)
         print(single_file)
@@ -58,4 +59,4 @@ for class_label, list_of_files in data_path_dict.items():
 df = pd.DataFrame(all_data, columns=["feature", "class_label"])
 
 ###### SAVING FOR FUTURE USE ###
-df.to_pickle("final_audio_data_csv/sri_audio_data_20221125.csv")
+df.to_pickle("final_audio_data_csv/sri_audio_data_20221128_5.csv")

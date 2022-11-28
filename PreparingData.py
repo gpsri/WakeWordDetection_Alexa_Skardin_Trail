@@ -58,9 +58,9 @@ def record_background_sound(save_path, n_times=50):
 
 # Step 1: Record yourself saying the Wake Word
 print("Recording the Wake Word:\n")
-record_audio_and_save("audio_data/", n_times=50) 
+record_audio_and_save("error_data/", n_times=50) 
 
 # Step 2: Record your background sounds (Just let it run, it will automatically record)
-print("Recording the Background sounds:\n")
-record_background_sound("background_sound/", n_times=50)
+# print("Recording the Background sounds:\n")
+# record_background_sound("background_sound/", n_times=50)
 

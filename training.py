@@ -11,11 +11,11 @@ from plot_cm import plot_confusion_matrix
 from sklearn.preprocessing import StandardScaler
 
 ##### Loading saved csv ##############
-df = pd.read_pickle("final_audio_data_csv/sri_audio_data_20221125.csv")
+df = pd.read_pickle("final_audio_data_csv/sri_audio_data_20221128_5.csv")
 
 ####### Making our data training-ready
 X = df["feature"].values
-X = np.concatenate(X, axis=0).reshape(len(X), 80)
+X = np.concatenate(X, axis=0).reshape(len(X), 40)
 
 y = np.array(df["class_label"].tolist())
 y = to_categorical(y)
@@ -32,14 +32,24 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 ##### Training ############
 
 # original 
+# model = Sequential([
+#     Dense(256, input_shape=X_train[0].shape),
+#     Activation('relu'),
+#     Dropout(0.2),
+#     Dense(256),
+#     Activation('relu'),
+#     Dropout(0.2),
+#     Dense(3, activation='softmax')
+# ])
+
 model = Sequential([
-    Dense(256, input_shape=X_train[0].shape),
+    Dense(128, input_shape=X_train[0].shape),
     Activation('relu'),
-    Dropout(0.5),
-    Dense(256),
+    Dropout(0.2),
+    Dense(128),
     Activation('relu'),
-    Dropout(0.5),
-    Dense(2, activation='softmax')
+    Dropout(0.2),
+    Dense(3, activation='softmax')
 ])
 
 # model = Sequential([
@@ -58,18 +68,27 @@ model.compile(
 )
 
 print("Model Score: \n")
-history = model.fit(X_train, y_train, epochs=1000)
-model.save("saved_model/Sri_WWD_20221125.h5")
+# history = model.fit(X_train, y_train, epochs=500)
+history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=200)
+model.save("saved_model/Sri_WWD_20221128_200epochs.h5")
 score = model.evaluate(X_test, y_test)
 print(score)
 
 metrics = history.history
-plt.plot(history.epoch, metrics['loss'], metrics['accuracy'])
-plt.legend(['loss','accuracy'])
+plt.plot(history.history['loss'], label='loss')
+plt.plot(history.history['val_loss'], label ='val_loss')
+plt.legend(['loss','val_loss'])
+plt.show()
+plt.plot(history.history['accuracy'], label='accuracy')
+plt.plot(history.history['val_accuracy'], label ='val_accuracy')
+#plt.plot(history.history['val_accuracy'])
+#plt.xaxis.set_label_text('val_loss')
+# plt.plot(history.epoch, metrics['loss'], metrics['accuracy'])
+plt.legend(['accuracy','val_accuracy'])
 plt.show()
 #### Evaluating our model ###########
 print("Model Classification Report: \n")
 y_pred = np.argmax(model.predict(X_test), axis=1)
 cm = confusion_matrix(np.argmax(y_test, axis=1), y_pred)
 print(classification_report(np.argmax(y_test, axis=1), y_pred))
-plot_confusion_matrix(cm, classes=["Does not have Wake Word", "Has Wake Word"])
+plot_confusion_matrix(cm, classes=["Does not have Wake Word", "Has Wake Word","Error_Word"])
